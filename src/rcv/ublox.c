@@ -1372,6 +1372,10 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
 *            "CFG-TMODE3 ..."
 *            "CFG-TPS   ..."
 *            "CFG-TXSLOT ..."
+*            "CFG-DGNSS dgnssmode rsv1 rsv2"
+*            "CFG-VALSET version layer rsv1 key val"
+*            "CFG-VALGET version layer position key"
+*            "CFG-VALDEL version layers rsv1 key"
 *          unsigned char *buff O binary message
 * return : length of binary message (0: error)
 * note   : see reference [1][3] for details.
@@ -1384,13 +1388,13 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         "PRT","USB","MSG","NMEA","RATE","CFG","TP","NAV2","DAT","INF",
         "RST","RXM","ANT","FXN","SBAS","LIC","TM","TM2","TMODE","EKF",
         "GNSS","ITFM","LOGFILTER","NAV5","NAVX5","ODO","PM2","PWR","RINV","SMGR",
-        "TMODE2","TMODE3","TPS","TXSLOT",""
+        "TMODE2","TMODE3","TPS","TXSLOT","DGNSS","VALSET","VALGET","VALDEL",""
     };
     const unsigned char id[]={
         0x00,0x1B,0x01,0x17,0x08,0x09,0x07,0x1A,0x06,0x02,
         0x04,0x11,0x13,0x0E,0x16,0x80,0x10,0x19,0x1D,0x12,
         0x3E,0x39,0x47,0x24,0x23,0x1E,0x3B,0x57,0x34,0x62,
-        0x36,0x71,0x31,0x53
+        0x36,0x71,0x31,0x53,0x70,0x8A,0x8B,0x8C
     };
     const int prm[][32]={
         {FU1,FU1,FU2,FU4,FU4,FU2,FU2,FU2,FU2},    /* PRT */
@@ -1429,7 +1433,11 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE2 */
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE3 */
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
-        {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4}     /* TXSLOT */
+        {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4},     /* TXSLOT */
+        {FU1,FU2,FU1},                            /* DGNSS */
+        {FU1,FU1,FU2,FU4,FU1},                    /* VALSET */
+        {FU1,FU1,FU2,FU4},                        /* VALGET */
+        {FU1,FU1,FU2,FU4}                         /* VALDEL */
     };
     unsigned char *q=buff;
     char mbuff[1024],*args[32],*p;
