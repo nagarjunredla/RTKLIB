@@ -1435,7 +1435,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
         {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4},     /* TXSLOT */
         {FU1,FU2,FU1},                            /* DGNSS */
-        {FU1,FU1,FU2,FU4,FU1},                    /* VALSET */
+        {FU1,FU1,FU2,FU4,FU4},                    /* VALSET */
         {FU1,FU1,FU2,FU4},                        /* VALGET */
         {FU1,FU1,FU2,FU4}                         /* VALDEL */
     };
