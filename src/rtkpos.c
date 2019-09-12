@@ -40,6 +40,7 @@
 *                           fix bug on slip detection of backward filter
 *           2016/08/20 1.22 fix bug on ddres() function
 *           2018/10/10 1.13 support api change of satexclude()
+*           2018/12/15 1.14 disable ambiguity resolution for gps-qzss
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -787,7 +788,7 @@ static void udbias(rtk_t *rtk, double tt, const obsd_t *obs, const int *sat,
                    const int *iu, const int *ir, int ns, const nav_t *nav)
 {
     double cp,pr,cp1,cp2,pr1,pr2,*bias,offset,lami,lam1,lam2,C1,C2;
-    int i,j,f,slip,reset,nf=NF(&rtk->opt),sysi;
+    int i,j,f,slip,rejc,reset,nf=NF(&rtk->opt),sysi;
     
     trace(3,"udbias  : tt=%.3f ns=%d\n",tt,ns);
     
@@ -831,14 +832,16 @@ static void udbias(rtk_t *rtk, double tt, const obsd_t *obs, const int *sat,
                 rtk->ssat[i-1].lock[f]=-rtk->opt.minlock;
             }
         }
-        /* reset phase-bias state if detecting cycle slip */
+        /* reset phase-bias state if detecting cycle slip or outlier */
         for (i=0;i<ns;i++) {
             j=IB(sat[i],f,&rtk->opt);
             rtk->P[j+j*rtk->nx]+=rtk->opt.prn[0]*rtk->opt.prn[0]*fabs(tt);
             slip=rtk->ssat[sat[i]-1].slip[f];
+            rejc=rtk->ssat[sat[i]-1].rejc[f];
             if (rtk->opt.ionoopt==IONOOPT_IFLC) slip|=rtk->ssat[sat[i]-1].slip[1];
-            if (rtk->opt.modear==ARMODE_INST||!(slip&1)) continue;
+            if (rtk->opt.modear==ARMODE_INST||(!(slip&1)&&rejc<2)) continue;
             rtk->x[j]=0.0;
+            rtk->ssat[sat[i]-1].rejc[f]=0;
             rtk->ssat[sat[i]-1].lock[f]=-rtk->opt.minlock;
             /* retain icbiases for GLONASS sats */
             if (rtk->ssat[sat[i]-1].sys!=SYS_GLO) rtk->ssat[sat[i]-1].icbias[f]=0;  
@@ -1174,16 +1177,16 @@ static double gloicbcorr(int sat1, int sat2, const prcopt_t *opt, double lam1,
     
     return opt->exterr.gloicb[f]*0.01*dfreq; /* (m) */
 }
-/* test navi system (m=0:gps/qzs/sbs,1:glo,2:gal,3:bds) ----------------------*/
+/* test navi system (m=0:gps/sbs,1:glo,2:gal,3:bds,4:qzs) --------------------*/
 static int test_sys(int sys, int m)
 {
     switch (sys) {
         case SYS_GPS: return m==0;
-        case SYS_QZS: return m==0;
         case SYS_SBS: return m==0;
         case SYS_GLO: return m==1;
         case SYS_GAL: return m==2;
         case SYS_CMP: return m==3;
+        case SYS_QZS: return m==4;
     }
     return 0;
 }
@@ -1211,9 +1214,9 @@ static int ddres(rtk_t *rtk, const nav_t *nav, const obsd_t *obs, double dt, con
                  double *H, double *R, int *vflg)
 {
     prcopt_t *opt=&rtk->opt;
-    double bl,dr[3],posu[3],posr[3],didxi=0.0,didxj=0.0,*im,icb;
+    double bl,dr[3],posu[3],posr[3],didxi=0.0,didxj=0.0,*im,icb,threshadj;
     double *tropr,*tropu,*dtdxr,*dtdxu,*Ri,*Rj,lami,lamj,fi,fj,df,*Hi=NULL;
-    int i,j,k,m,f,frq,code,nv=0,nb[NFREQ*4*2+2]={0},b=0,sysi,sysj,nf=NF(opt);
+    int i,j,ii,jj,k,m,f,frq,code,nv=0,nb[NFREQ*4*2+2]={0},b=0,sysi,sysj,nf=NF(opt);
     
     trace(3,"ddres   : dt=%.1f nx=%d ns=%d\n",dt,rtk->nx,ns);
     
@@ -1244,8 +1247,8 @@ static int ddres(rtk_t *rtk, const nav_t *nav, const obsd_t *obs, double dt, con
             tropr[i]=prectrop(rtk->sol.time,posr,1,azel+ir[i]*2,opt,x,dtdxr+i*3);
         }
     }
-    /* step through sat systems: m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
-    for (m=0;m<4;m++) { 
+    /* step through sat systems: m=0:gps/sbs,1:glo,2:gal,3:bds 4:qzs*/
+    for (m=0;m<5;m++) { 
 
         /* step through phases/codes */
         for (f=opt->mode>PMODE_DGPS?0:nf;f<nf*2;f++) {
@@ -1360,15 +1363,21 @@ static int ddres(rtk_t *rtk, const nav_t *nav, const obsd_t *obs, double dt, con
                 else      rtk->ssat[sat[j]-1].resc[frq]=v[nv];  /* carrier phase */
 
                 /* if residual too large, flag as outlier */
-                if (opt->maxinno>0.0&&fabs(v[nv])>opt->maxinno) {
+                ii=IB(sat[i],frq,opt);
+                jj=IB(sat[j],frq,opt);
+                /* adjust threshold by error stdev ratio unless one of the phase biases was just initialized*/
+                threshadj=code||(rtk->P[ii+rtk->nx*ii]>SQR(rtk->opt.std[0]/2))||
+                          (rtk->P[jj+rtk->nx*jj]>SQR(rtk->opt.std[0]/2))?opt->eratio[frq]:1;
+                if (opt->maxinno>0.0&&fabs(v[nv])>opt->maxinno*threshadj) {
                     if (!code) {
-                        rtk->ssat[sat[i]-1].rejc[frq]++;
+                        rtk->ssat[sat[j]-1].vsat[frq]=0;
                         rtk->ssat[sat[j]-1].rejc[frq]++;
                     }
                     errmsg(rtk,"outlier rejected (sat=%3d-%3d %s%d v=%.3f)\n",
                             sat[i],sat[j],code?"P":"L",frq+1,v[nv]);
                     continue;
                 }
+
                 /* single-differenced measurement error variances */
                 Ri[nv] = varerr(sat[i], sysi, azel[1+iu[i]*2], 
                                 0.25 * rtk->ssat[sat[i]-1].snr_rover[frq],
@@ -1489,7 +1498,7 @@ static int ddmat(rtk_t *rtk, double *D,int gps,int glo,int sbs)
     /* set diaganol elements for all non sat phase-bias states */
     for (i=0;i<na;i++) D[i+i*nx]=1.0;
     
-    for (m=0;m<4;m++) { /* m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
+    for (m=0;m<5;m++) { /* m=0:gps/sbs,1:glo,2:gal,3:bds,4:qzs */
         
         /* skip if ambiguity resolution turned off for this sys */
         nofix=(m==0&&gps==0)||(m==1&&glo==0)||(m==3&&rtk->opt.bdsmodear==0);        
@@ -1555,7 +1564,7 @@ static void restamb(rtk_t *rtk, const double *bias, int nb, double *xa)
     for (i=0;i<rtk->nx;i++) xa[i]=rtk->x [i];  /* init all fixed states to float state values */
     for (i=0;i<rtk->na;i++) xa[i]=rtk->xa[i];  /* overwrite non phase-bias states with fixed values */
     
-    for (m=0;m<4;m++) for (f=0;f<nf;f++) {
+    for (m=0;m<5;m++) for (f=0;f<nf;f++) {
         
         for (n=i=0;i<MAXSAT;i++) {
             if (!test_sys(rtk->ssat[i].sys,m)||rtk->ssat[i].fix[f]!=2) {
@@ -1583,7 +1592,7 @@ static void holdamb(rtk_t *rtk, const double *xa)
     
     v=mat(nb,1); H=zeros(nb,rtk->nx);
     
-    for (m=0;m<4;m++) for (f=0;f<nf;f++) {
+    for (m=0;m<5;m++) for (f=0;f<nf;f++) {
         
         for (n=i=0;i<MAXSAT;i++) {
             if (!test_sys(rtk->ssat[i].sys,m)||rtk->ssat[i].fix[f]!=2||
@@ -1770,6 +1779,7 @@ static int resamb_LAMBDA(rtk_t *rtk, double *bias, double *xa,int gps,int glo,in
     }
     else {
         errmsg(rtk,"lambda error (info=%d)\n",info);
+        nb=0;
     }
     free(D); free(y); free(Qy); free(DP);
     free(b); free(db); free(Qb); free(Qab); free(QQ);

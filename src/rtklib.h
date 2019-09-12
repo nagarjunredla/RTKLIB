@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtklib.h : rtklib constants, types and function prototypes
 *
-*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2019 by T.TAKASU, All rights reserved.
 *
 * options : -DENAGLO   enable GLONASS
 *           -DENAGAL   enable Galileo
@@ -58,10 +58,10 @@ extern "C" {
 
 #define VER_RTKLIB  "demo5"             /* library version */
 
-#define PATCH_LEVEL "b31a"               /* patch level */
+#define PATCH_LEVEL "b33"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2018 T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2019 T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
@@ -78,15 +78,15 @@ extern "C" {
 
 #define HION        350000.0            /* ionosphere height (m) */
 
-#define MAXFREQ     7                   /* max NFREQ */
+#define MAXFREQ     6                   /* max NFREQ */
 
-#define FREQL1      1.57542E9           /* L1/E1  frequency 1 (Hz) */
-#define FREQL2      1.22760E9           /* L2     frequency 2 (Hz) */
-#define FREQE5b      1.20714E9          /* E5b    frequency 3 (Hz) */
-#define FREQL5      1.17645E9           /* L5/E5a frequency 4 (Hz) */
-#define FREQE6      1.27875E9           /* E6/LEX frequency 5 (Hz) */
-#define FREQE5ab    1.191795E9          /* E5a+b  frequency 6 (Hz) */
-#define FREQs       2.492028E9           /* S      frequency 7 (Hz) */
+#define FREQL1      1.57542E9           /* L1/E1/B1  frequency (Hz) */
+#define FREQL2      1.22760E9           /* L2     frequency (Hz) */
+#define FREQE5b     1.20714E9           /* E5b    frequency (Hz) */
+#define FREQL5      1.17645E9           /* L5/E5a frequency (Hz) */
+#define FREQE6      1.27875E9           /* E6/LEX frequency (Hz) */
+#define FREQE5ab    1.191795E9          /* E5a+b/B2  frequency (Hz) */
+#define FREQs       2.492028E9           /* S      frequency (Hz) */
 #define FREQ1_GLO   1.60200E9           /* GLONASS G1 base frequency (Hz) */
 #define DFRQ1_GLO   0.56250E6           /* GLONASS G1 bias frequency (Hz/n) */
 #define FREQ2_GLO   1.24600E9           /* GLONASS G2 base frequency (Hz) */
@@ -176,7 +176,7 @@ extern "C" {
 #endif
 #ifdef ENACMP
 #define MINPRNCMP   1                   /* min satellite sat number of BeiDou */
-#define MAXPRNCMP   35                  /* max satellite sat number of BeiDou */
+#define MAXPRNCMP   37                  /* max satellite sat number of BeiDou */
 #define NSATCMP     (MAXPRNCMP-MINPRNCMP+1) /* number of BeiDou satellites */
 #define NSYSCMP     1
 #else
@@ -272,12 +272,11 @@ extern "C" {
 #define OBSTYPE_ALL 0xFF                /* observation type: all */
 
 #define FREQTYPE_L1 0x01                /* frequency type: L1/E1 */
-#define FREQTYPE_L2 0x02                /* frequency type: L2/B1 */
-#define FREQTYPE_E5b 0x04               /* frequency type: E5b/B2 */
-#define FREQTYPE_L5 0x08                /* frequency type: L5/E5a/L3 */
-#define FREQTYPE_E6 0x10                /* frequency type: E6/LEX/B3 */
-#define FREQTYPE_E5ab 0x20              /* frequency type: E5(a+b) */
-#define FREQTYPE_S 0x40                 /* frequency type: S */
+#define FREQTYPE_L2 0x02                /* frequency type: L2/B1/E5b */
+#define FREQTYPE_L5 0x04                /* frequency type: L5/E5a/L3 */
+#define FREQTYPE_E6 0x08                /* frequency type: E6/LEX/B3 */
+#define FREQTYPE_E5ab 0x10              /* frequency type: E5(a+b) */
+#define FREQTYPE_S 0x20                 /* frequency type: S */
 #define FREQTYPE_ALL 0xFF               /* frequency type: all */
 
 #define CODE_NONE   0                   /* obs code: none or unknown */
@@ -1064,7 +1063,7 @@ typedef struct {        /* SNR mask type */
 typedef struct {        /* processing options type */
     int mode;           /* positioning mode (PMODE_???) */
     int soltype;        /* solution type (0:forward,1:backward,2:combined) */
-    int nf;             /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+E5b,4:L1+L2+E5b+L5) */
+    int nf;             /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L3,4:L1+L2+L3+L4) */
     int navsys;         /* navigation system */
     double elmin;       /* elevation mask angle (rad) */
     snrmask_t snrmask;  /* SNR mask */
@@ -1455,8 +1454,8 @@ EXPORT int  satno   (int sys, int prn);
 EXPORT int  satsys  (int sat, int *prn);
 EXPORT int  satid2no(const char *id);
 EXPORT void satno2id(int sat, char *id);
-EXPORT unsigned char obs2code(int sys, const char *obs, int *freq);
-EXPORT char *code2obs(int sys, unsigned char code, int *freq);
+EXPORT unsigned char obs2code(const char *obs, int *freq);
+EXPORT char *code2obs(unsigned char code, int *freq);
 EXPORT int  satexclude(int sat, double var, int svh, const prcopt_t *opt);
 EXPORT int  testsnr(int base, int freq, double el, double snr,
                     const snrmask_t *mask);
@@ -1648,8 +1647,10 @@ EXPORT int  input_rnxctr(rnxctr_t *rnx, FILE *fp);
 EXPORT double eph2clk (gtime_t time, const eph_t  *eph);
 EXPORT double geph2clk(gtime_t time, const geph_t *geph);
 EXPORT double seph2clk(gtime_t time, const seph_t *seph);
-EXPORT double uravalue(int sys, int ura);
-EXPORT int uraindex(double value, int sys);
+EXPORT double uravalue(int ura);
+EXPORT int uraindex(double value);
+EXPORT double sisa_value(int sisa);
+EXPORT int sisa_index(double value);
 EXPORT void eph2pos (gtime_t time, const eph_t  *eph,  double *rs, double *dts,
                      double *var);
 EXPORT void geph2pos(gtime_t time, const geph_t *geph, double *rs, double *dts,

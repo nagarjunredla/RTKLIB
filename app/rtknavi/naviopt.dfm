@@ -187,14 +187,14 @@ object OptDialog: TOptDialog
       end
       object PosMode: TComboBox
         Left = 248
-        Top = 4
+        Top = 3
         Width = 152
         Height = 21
         Style = csDropDownList
         DropDownCount = 10
-        ItemIndex = 0
+        ItemIndex = 2
         TabOrder = 0
-        Text = 'Single'
+        Text = 'Kinematic'
         OnChange = PosModeChange
         Items.Strings = (
           'Single'
@@ -220,7 +220,8 @@ object OptDialog: TOptDialog
         OnChange = FreqChange
         Items.Strings = (
           'L1'
-          'L1+L2')
+          'L1+L2'
+          'L1+L2+L5')
       end
       object SatEphem: TComboBox
         Left = 248

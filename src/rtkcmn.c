@@ -16,8 +16,6 @@
 *     [1] IS-GPS-200D, Navstar GPS Space Segment/Navigation User Interfaces,
 *         7 March, 2006
 *     [2] RTCA/DO-229C, Minimum operational performanc standards for global
-*         positioning system/wide area augmentation system airborne equipment,
-*         RTCA inc, November 28, 2001
 *     [3] M.Rothacher, R.Schmid, ANTEX: The Antenna Exchange Format Version 1.4,
 *         15 September, 2010
 *     [4] A.Gelb ed., Applied Optimal Estimation, The M.I.T Press, 1974
@@ -186,7 +184,7 @@ const double chisqr[100]={      /* chi-sqr(n) (alpha=0.001) */
     138 ,139 ,140 ,142 ,143 ,144 ,145 ,147 ,148 ,149
 };
 const double lam_carr[MAXFREQ]={ /* carrier wave length (m) */
-    CLIGHT/FREQL1,CLIGHT/FREQL2,CLIGHT/FREQE5b,CLIGHT/FREQL5,CLIGHT/FREQE6,
+	CLIGHT/FREQL1,CLIGHT/FREQL2,CLIGHT/FREQL5,CLIGHT/FREQE6,
     CLIGHT/FREQE5ab,CLIGHT/FREQs
 };
 const prcopt_t prcopt_default={ /* defaults processing options */
@@ -253,34 +251,24 @@ static char *obscodes[]={       /* observation code strings */
     "5B","5C","9A","9B","9C", "9X",""  ,""  ,""  ,""    /* 50-59 */
 };
 static unsigned char obsfreqs[]={
-    /* 1:L1/E1, 2:L2, 3:E5b, 4:L5/E5a/L3, 5:E6/LEX, 6:E5(a+b), 7:S */
+    /* 1:L1/E1/B1, 2:L2/E5b/B2, 3:L5/E5a, 4:E6/LEX/B3, 5:E5(a+b), 6:S */
     0, 1, 1, 1, 1,  1, 1, 1, 1, 1, /*  0- 9 */
     1, 1, 1, 1, 2,  2, 2, 2, 2, 2, /* 10-19 */
-    2, 2, 2, 2, 4,  4, 4, 3, 3, 3, /* 20-29 */
-    5, 5, 5, 5, 5,  5, 5, 6, 6, 6, /* 30-39 */
-    1, 1, 3, 3, 4,  4, 4, 1, 1, 4, /* 40-49 */
-    4, 4, 7, 7, 7,  7, 0, 0, 0, 0  /* 50-59 */
+    2, 2, 2, 2, 3,  3, 3, 2, 2, 2, /* 20-29 */
+    4, 4, 4, 4, 4,  4, 4, 5, 5, 5, /* 30-39 */
+    1, 1, 3, 3, 3,  3, 3, 1, 1, 3, /* 40-49 */
+    3, 3, 6, 6, 6,  6, 0, 0, 0, 0  /* 50-59 */
 };
-static unsigned char obsfreqs_cmp[]={
-    /* 1:B1, 2:B2, 3:B3 */
-    0, 1, 1, 1, 1,  1, 1, 1, 1, 1, /*  0- 9 */
-    1, 1, 1, 1, 2,  2, 2, 2, 1, 2, /* 10-19 */
-    2, 2, 2, 2, 4,  4, 4, 2, 2, 2, /* 20-29 */
-    5, 5, 5, 3, 5,  5, 5, 6, 6, 6, /* 30-39 */
-    1, 1, 3, 3, 4,  4, 4, 1, 1, 4, /* 40-49 */
-    4, 4, 7, 7, 7,  7, 0, 0, 0, 0  /* 50-59 */
-};
-
 static char codepris[7][MAXFREQ][16]={  /* code priority table */
 
-   /* L1/E1/B1   L2/B2      E5b/B3  L5/E5a/L3 E6/LEX     E5(a+b)  S */
-    {"CPYWMNSL","CLPYWMNDSX","IQX"   ,"IQX"   ,""        ,""      ,""    }, /* GPS */
-    {"PC"      ,"PC"        ,"IQX"   ,"IQX"   ,""        ,""      ,""    }, /* GLO */
-    {"CABXZ"   ,""          ,"IQX"   ,"IQX"   ,"ABCXZ"   ,"IQX"   ,""    }, /* GAL */
-    {"CSLXZ"   ,"SLX"       ,"IQX"   ,"IQX"   ,"SLX"     ,""      ,""    }, /* QZS */
-    {"C"       ,""          ,"IQX"   ,"IQX"   ,""        ,""      ,""    }, /* SBS */
-    {"IQX"     ,"IQX"       ,"IQX"   ,"IQX"   ,"IQX"     ,""      ,""    }, /* BDS */
-    {""        ,""          ,"ABCX"  ,"ABCX"  ,""        ,""      ,"ABCX"}  /* IRN */
+   /* L1/E1/B1   L2/E5b/B2      E5b/B3  L5/E5a/L3 E6/LEX     E5(a+b)  S */
+    {"CPYWMNSL","CLPYWMNDSX","IQX"   ,""        ,""      ,""    }, /* GPS */
+    {"PC"      ,"PC"        ,"IQX"   ,""        ,""      ,""    }, /* GLO */
+    {"CABXZ"   ,"IQX"       ,"IQX"   ,"ABCXZ"   ,"IQX"   ,""    }, /* GAL */
+    {"CSLXZ"   ,"SLX"       ,"IQX"   ,"SLX"     ,""      ,""    }, /* QZS */
+    {"C"       ,""          ,"IQX"   ,""        ,""      ,""    }, /* SBS */
+    {"IQX"     ,"IQX"       ,"IQX"   ,"IQX"     ,""      ,""    }, /* BDS */
+    {""        ,""          ,"ABCX"  ,""        ,""      ,"ABCX"}  /* IRN */
 };
 static fatalfunc_t *fatalfunc=NULL; /* fatal callback function */
 
@@ -597,19 +585,13 @@ extern int testsnr(int base, int freq, double el, double snr,
 * return : obs code (CODE_???)
 * notes  : obs codes are based on reference [6] and qzss extension
 *-----------------------------------------------------------------------------*/
-extern unsigned char obs2code(int sys, const char *obs, int *freq)
+extern unsigned char obs2code(const char *obs, int *freq)
 {
     int i;
     if (freq) *freq=0;
     for (i=1;*obscodes[i];i++) {
         if (strcmp(obscodes[i],obs)) continue;
-        
-    if (freq) {
-       if (sys==SYS_CMP)
-           *freq=obsfreqs_cmp[i];
-       else
-           *freq=obsfreqs[i];
-    }
+        if (freq) *freq=obsfreqs[i];
         return (unsigned char)i;
     }
     return CODE_NONE;
@@ -623,16 +605,11 @@ extern unsigned char obs2code(int sys, const char *obs, int *freq)
 * return : obs code string ("1C","1P","1P",...)
 * notes  : obs codes are based on reference [6] and qzss extension
 *-----------------------------------------------------------------------------*/
-extern char *code2obs(int sys, unsigned char code, int *freq)
+extern char *code2obs(unsigned char code, int *freq)
 {
     if (freq) *freq=0;
     if (code<=CODE_NONE||MAXCODE<code) return "";
-    if (freq) {
-       if (sys==SYS_CMP)
-           *freq=obsfreqs_cmp[code];
-       else
-           *freq=obsfreqs[code];
-    }
+    if (freq) *freq=obsfreqs[code];
     return obscodes[code];
 }
 /* set code priority -----------------------------------------------------------
@@ -679,7 +656,7 @@ extern int getcodepri(int sys, unsigned char code, const char *opt)
         case SYS_IRN: i=6; optstr="-IL%2s"; break;
         default: return 0;
     }
-    obs=code2obs(sys,code,&j);
+    obs=code2obs(code,&j);
     
     /* parse code options */
     for (p=opt;p&&(p=strchr(p,'-'));p++) {
@@ -2654,36 +2631,34 @@ static void uniqseph(nav_t *nav)
     trace(4,"uniqseph: ns=%d\n",nav->ns);
 }
 /* ura index to ura nominal value (m) ----------------------------------------*/
-extern double uravalue(int sys, int sva)
+extern double uravalue(int sva)
 {
-    if (sys==SYS_GAL) {
-        if (sva<= 49) return sva*0.01;
-        if (sva<= 74) return 0.5+(sva- 50)*0.02;
-        if (sva<= 99) return 1.0+(sva- 75)*0.04;
-        if (sva<=125) return 2.0+(sva-100)*0.16;
-        return -1.0; /* unknown or NAPA */
-    }
-    else {
-        return 0<=sva&&sva<15?ura_nominal[sva]:8192.0;
-    }
+    return 0<=sva&&sva<15?ura_nominal[sva]:8192.0;
 }
-extern int uraindex(double value, int sys)
+/* ura value (m) to ura index ------------------------------------------------*/
+extern int uraindex(double value)
 {
     int i;
-
-    if (sys==SYS_GAL) {
-        if (value>0 && value<0.5)
-            i=(int)(value*100+0.5);
-        else if (value>=0.5 && value<1.0)
-            i=50+(int)((value-0.5)/2*100+0.5);
-        else if (value>=1.0 && value<2.0)
-            i=75+(int)((value-1.0)/4*100);
-        else if (value>=2.0 && value<6.0)
-            i=100+(int)((value-2.0)/16*100+0.5);
-        else i=125;
-    } else
-        for (i=0;i<15;i++) if (ura_value[i]>=value) break;
+    for (i=0;i<15;i++) if (ura_value[i]>=value) break;
     return i;
+}
+/* galileo sisa index to sisa nominal value (m) ------------------------------*/
+extern double sisa_value(int sisa)
+{
+    if (sisa<= 49) return sisa*0.01;
+    if (sisa<= 74) return 0.5+(sisa- 50)*0.02;
+    if (sisa<= 99) return 1.0+(sisa- 75)*0.04;
+    if (sisa<=125) return 2.0+(sisa-100)*0.16;
+    return -1.0; /* unknown or NAPA */
+}
+/* galileo sisa value (m) to sisa index --------------------------------------*/
+extern int sisa_index(double value)
+{
+    if (value<0.0 || value>6.0) return 255; /* unknown or NAPA */
+    else if (value<=0.5) return (int)(value/0.01);
+    else if (value<=1.0) return (int)((value-0.5)/0.02)+50;
+    else if (value<=2.0) return (int)((value-1.0)/0.04)+75;
+    return (int)((value-2.0)/0.16)+100;
 }
 /* unique ephemerides ----------------------------------------------------------
 * unique ephemerides in navigation data and update carrier wave length
@@ -3389,7 +3364,7 @@ extern double satwavelen(int sat, int frq, const nav_t *nav)
     int i,sys=satsys(sat,NULL);
     
     if (sys==SYS_GLO) {
-        if (0<=frq&&frq<=1) {
+        if (0<=frq&&frq<=1) { /* L1,L2 */
             for (i=0;i<nav->ng;i++) {
                 if (nav->geph[i].sat!=sat) continue;
                 return CLIGHT/(freq_glo[frq]+dfrq_glo[frq]*nav->geph[i].frq);
@@ -3404,13 +3379,18 @@ extern double satwavelen(int sat, int frq, const nav_t *nav)
         else if (frq==1) return CLIGHT/FREQ2_CMP; /* B2 */
         else if (frq==2) return CLIGHT/FREQ3_CMP; /* B3 */
     }
-    else {
-        if      (frq==0) return CLIGHT/FREQL1; /* L1/E1 */
+    else if (sys==SYS_GAL) {
+        if      (frq==0) return CLIGHT/FREQL1; /* E1 */
+        else if (frq==1) return CLIGHT/FREQE5b; /* E5b */
+        else if (frq==2) return CLIGHT/FREQL5; /* E5a */
+        else if (frq==3) return CLIGHT/FREQE6; /* E6 */
+        else if (frq==5) return CLIGHT/FREQE5ab; /* E5ab */
+    }
+    else { /* GPS,QZS */
+        if      (frq==0) return CLIGHT/FREQL1; /* L1 */
         else if (frq==1) return CLIGHT/FREQL2; /* L2 */
-        else if (frq==2) return CLIGHT/FREQE5b; /* E5b */
-        else if (frq==3) return CLIGHT/FREQL5; /* L5/E5a */
-        else if (frq==4) return CLIGHT/FREQE6; /* L6/LEX */
-        else if (frq==5) return CLIGHT/FREQE5ab; /* E5a+b */
+        else if (frq==2) return CLIGHT/FREQL5; /* L5 */
+        else if (frq==3) return CLIGHT/FREQE6; /* L6/LEX */
         else if (frq==6) return CLIGHT/FREQs; /* S */
     }
     return 0.0;
