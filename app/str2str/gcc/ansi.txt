@@ -1,0 +1,166 @@
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../str2str.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/stream.c
+../../../src/stream.c: In function ‘ftpthread’:
+../../../src/stream.c:2379:26: warning: ‘sprintf’ may write a terminating nul past the end of the destination [-Wformat-overflow=]
+     sprintf(local,"%s%c%s",localdir,FILEPATHSEP,p);
+                          ^
+../../../src/stream.c:2379:5: note: ‘sprintf’ output 2 or more bytes (assuming 1025) into a destination of size 1024
+     sprintf(local,"%s%c%s",localdir,FILEPATHSEP,p);
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c:2380:24: warning: ‘.err’ directive writing 4 bytes into a region of size between 1 and 1024 [-Wformat-overflow=]
+     sprintf(errfile,"%s.err",local);
+                        ^~~~
+../../../src/stream.c:2380:5: note: ‘sprintf’ output between 5 and 1028 bytes into a destination of size 1024
+     sprintf(errfile,"%s.err",local);
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c:2410:40: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 998 and 1009 [-Wformat-overflow=]
+         sprintf(opt,"%s-t 1 -T %d -O \"%s\"",proxyopt,FTP_TIMEOUT,local);
+                                        ^~                         ~~~~~
+../../../src/stream.c:2410:9: note: ‘sprintf’ output between 17 and 1051 bytes into a destination of size 1024
+         sprintf(opt,"%s-t 1 -T %d -O \"%s\"",proxyopt,FTP_TIMEOUT,local);
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c:2411:27: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 1020 and 2043 [-Wformat-overflow=]
+         sprintf(cmd,"%s%s %s \"http://%s/%s\" 2> \"%s\"\n",env,FTP_CMD,opt,ftp->addr,
+                           ^~                                           ~~~
+../../../src/stream.c:2411:9: note: ‘sprintf’ output between 24 and 5139 bytes into a destination of size 2048
+         sprintf(cmd,"%s%s %s \"http://%s/%s\" 2> \"%s\"\n",env,FTP_CMD,opt,ftp->addr,
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                 remote,errfile);
+                 ~~~~~~~~~~~~~~~
+../../../src/stream.c:2404:97: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 435 and 956 [-Wformat-overflow=]
+         sprintf(opt,"--ftp-user=%s --ftp-password=%s --glob=off --passive-ftp %s-t 1 -T %d -O \"%s\"",
+                                                                                                 ^~
+                 ftp->user,ftp->passwd,proxyopt,FTP_TIMEOUT,local);
+                                                            ~~~~~                                 
+../../../src/stream.c:2404:9: note: ‘sprintf’ output between 70 and 1614 bytes into a destination of size 1024
+         sprintf(opt,"--ftp-user=%s --ftp-password=%s --glob=off --passive-ftp %s-t 1 -T %d -O \"%s\"",
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                 ftp->user,ftp->passwd,proxyopt,FTP_TIMEOUT,local);
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c:2406:27: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 1020 and 2043 [-Wformat-overflow=]
+         sprintf(cmd,"%s%s %s \"ftp://%s/%s\" 2> \"%s\"\n",env,FTP_CMD,opt,ftp->addr,
+                           ^~                                          ~~~
+../../../src/stream.c:2406:9: note: ‘sprintf’ output between 23 and 5138 bytes into a destination of size 2048
+         sprintf(cmd,"%s%s %s \"ftp://%s/%s\" 2> \"%s\"\n",env,FTP_CMD,opt,ftp->addr,
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                 remote,errfile);
+                 ~~~~~~~~~~~~~~~
+../../../src/stream.c: In function ‘openntrip’:
+../../../src/stream.c:1694:36: warning: ‘%s’ directive writing up to 1023 bytes into a region of size 249 [-Wformat-overflow=]
+         sprintf(ntrip->url,"http://%s",tpath);
+                                    ^~  ~~~~~
+../../../src/stream.c:1694:9: note: ‘sprintf’ output between 8 and 1031 bytes into a destination of size 256
+         sprintf(ntrip->url,"http://%s",tpath);
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c: In function ‘openserial’:
+../../../src/stream.c:442:23: warning: ‘%s’ directive writing up to 127 bytes into a region of size 123 [-Wformat-overflow=]
+     sprintf(dev,"/dev/%s",port);
+                       ^~  ~~~~
+../../../src/stream.c:442:5: note: ‘sprintf’ output between 6 and 133 bytes into a destination of size 128
+     sprintf(dev,"/dev/%s",port);
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In function ‘rspntrip_s’,
+    inlined from ‘waitntrip’ at ../../../src/stream.c:1660:31:
+../../../src/stream.c:1557:9: warning: ‘strncpy’ output may be truncated copying between 0 and 32 bytes from a string of length 32767 [-Wstringop-truncation]
+         strncpy(msg,(char *)ntrip->buff,nb); msg[nb]=0;
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/stream.c: In function ‘strstat’:
+../../../src/stream.c:3027:9: warning: ‘strncpy’ output may be truncated copying 1023 bytes from a string of length 1023 [-Wstringop-truncation]
+         strncpy(msg,stream->msg,MAXSTRMSG-1); msg[MAXSTRMSG-1]='\0';
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rtkcmn.c
+../../../src/rtkcmn.c: In function ‘readpos’:
+../../../src/rtkcmn.c:2357:9: warning: ‘strncpy’ output may be truncated copying 15 bytes from a string of length 255 [-Wstringop-truncation]
+         strncpy(stas[np],str,15); stas[np++][15]='\0';
+         ^~~~~~~~~~~~~~~~~~~~~~~~
+../../../src/rtkcmn.c: In function ‘rtk_uncompress’:
+../../../src/rtkcmn.c:3905:42: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 1010 and 2033 [-Wformat-overflow=]
+         sprintf(cmd,"tar -C \"%s\" -xf \"%s\"",dir,tmpfile);
+                                          ^~        ~~~~~~~
+../../../src/rtkcmn.c:3905:9: note: ‘sprintf’ output between 17 and 2063 bytes into a destination of size 2048
+         sprintf(cmd,"tar -C \"%s\" -xf \"%s\"",dir,tmpfile);
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/solution.c
+../../../src/solution.c: In function ‘decode_sol’:
+../../../src/solution.c:313:20: warning: ‘val[0]’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (!strcmp(val[0]+3,"RMC")) { /* $xxRMC */
+                 ~~~^~~
+../../../src/solution.c: In function ‘outsols’:
+../../../src/solution.c:1666:23: warning: ‘%s’ directive writing up to 63 bytes into a region of size between 53 and 60 [-Wformat-overflow=]
+         sprintf(s,"%4d%s%*.*f",week,sep,6+(timeu<=0?0:timeu+1),timeu,gpst);
+                       ^~
+../../../src/solution.c:1666:9: note: ‘sprintf’ output between 11 and 406 bytes into a destination of size 64
+         sprintf(s,"%4d%s%*.*f",week,sep,6+(timeu<=0?0:timeu+1),timeu,gpst);
+         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/sbas.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/geoid.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcvraw.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/novatel.c
+../../../src/rcv/novatel.c:111:22: warning: ‘chksum’ defined but not used [-Wunused-function]
+ static unsigned char chksum(const unsigned char *buff, int len)
+                      ^~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/ublox.c
+In function ‘setU8’,
+    inlined from ‘gen_ubx’ at ../../../src/rcv/ublox.c:2283:24:
+../../../src/rcv/ublox.c:122:56: warning: ‘memcpy’ forming offset [5, 8] is out of the bounds [0, 4] of object ‘u’ with type ‘long unsigned int’ [-Warray-bounds]
+ static void setU8(unsigned char *p, unsigned long  u) {memcpy(p,&u,8);}
+                                                        ^~~~~~~~~~~~~~
+../../../src/rcv/ublox.c: In function ‘gen_ubx’:
+../../../src/rcv/ublox.c:1389:12: note: ‘u’ declared here
+ extern int gen_ubx(const char *msg, unsigned char *buff)
+            ^~~~~~~
+In function ‘setU8’,
+    inlined from ‘gen_ubx’ at ../../../src/rcv/ublox.c:1479:24:
+../../../src/rcv/ublox.c:122:56: warning: ‘memcpy’ forming offset [5, 8] is out of the bounds [0, 4] of object ‘u’ with type ‘long unsigned int’ [-Warray-bounds]
+ static void setU8(unsigned char *p, unsigned long  u) {memcpy(p,&u,8);}
+                                                        ^~~~~~~~~~~~~~
+../../../src/rcv/ublox.c: In function ‘gen_ubx’:
+../../../src/rcv/ublox.c:1389:12: note: ‘u’ declared here
+ extern int gen_ubx(const char *msg, unsigned char *buff)
+            ^~~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/swiftnav.c
+../../../src/rcv/swiftnav.c:195:21: warning: ‘ura_eph’ defined but not used [-Wunused-const-variable=]
+ static const double ura_eph[] = {/* ura values */
+                     ^~~~~~~
+../../../src/rcv/swiftnav.c:18:19: warning: ‘rcsid’ defined but not used [-Wunused-const-variable=]
+ static const char rcsid[] = "$Id: Swiftnav SBP,v 1.0 2017/02/01 FT $";
+                   ^~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/crescent.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/skytraq.c
+../../../src/rcv/skytraq.c: In function ‘gen_stq’:
+../../../src/rcv/skytraq.c:776:21: warning: ‘args[0]’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (!strcmp(args[0],"RESTART")) {
+                 ~~~~^~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/gw10.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/javad.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/nvs.c
+../../../src/rcv/nvs.c: In function ‘gen_nvs’:
+../../../src/rcv/nvs.c:566:21: warning: ‘args[0]’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (!strcmp(args[0],"CFG-PVTRATE")) {
+                 ~~~~^~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/binex.c
+../../../src/rcv/binex.c:40:21: warning: ‘ura_eph’ defined but not used [-Wunused-const-variable=]
+ static const double ura_eph[]={
+                     ^~~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/rt17.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rtcm.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rtcm2.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rtcm3.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rtcm3e.c
+../../../src/rtcm3e.c: In function ‘gen_obs_glo’:
+../../../src/rtcm3e.c:293:44: warning: ‘freq2’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (data->L[1]!=0.0) L1=data->L[1]-tadj*freq2;
+                                        ~~~~^~~~~~
+../../../src/rtcm3e.c:291:44: warning: ‘freq1’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (data->L[0]!=0.0) L0=data->L[0]-tadj*freq1;
+                                        ~~~~^~~~~~
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/preceph.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/streamsvr.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/septentrio.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/cmr.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/tersus.c
+cc -c -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I../../../src -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=4 -DNEXOBS=3 -DSVR_REUSEADDR  -g ../../../src/rcv/comnav.c
+../../../src/rcv/comnav.c:65:22: warning: ‘chksum’ defined but not used [-Wunused-function]
+ static unsigned char chksum(const unsigned char *buff, int len)
+                      ^~~~~~
+cc   str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o rcvraw.o novatel.o ublox.o swiftnav.o crescent.o skytraq.o gw10.o javad.o nvs.o binex.o rt17.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o septentrio.o cmr.o tersus.o comnav.o  -lm -lrt -lpthread -o str2str
